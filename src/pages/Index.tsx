@@ -6,6 +6,11 @@ import { useState } from "react";
 
 const Index = () => {
   const [uploadedResume, setUploadedResume] = useState(null);
+  const [activeTab, setActiveTab] = useState("");
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -16,29 +21,36 @@ const Index = () => {
         </div>
         
         <Card className="max-w-6xl mx-auto">
-          <Tabs defaultValue="profile" className="w-full">
+          <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
             <TabsList className="grid w-full grid-cols-2 h-14">
               <TabsTrigger value="profile" className="text-lg font-medium">Profile</TabsTrigger>
               <TabsTrigger value="job" className="text-lg font-medium">Job</TabsTrigger>
             </TabsList>
             
             <TabsContent value="profile" className="p-6">
-              {!uploadedResume ? (
-                <UploadResume onResumeUploaded={setUploadedResume} />
-              ) : (
-                <ResumeDisplay resumeData={uploadedResume} />
-              )}
+              <div className="text-center text-muted-foreground">
+                Upload your resume to view your profile details
+              </div>
             </TabsContent>
             
             <TabsContent value="job" className="p-6">
-              {!uploadedResume ? (
-                <UploadResume onResumeUploaded={setUploadedResume} />
-              ) : (
-                <ResumeDisplay resumeData={uploadedResume} />
-              )}
+              <div className="text-center text-muted-foreground">
+                Upload your resume to explore job opportunities
+              </div>
             </TabsContent>
           </Tabs>
         </Card>
+
+        {/* Upload Resume Section - Shows when any tab is clicked */}
+        {activeTab && (
+          <div className="max-w-6xl mx-auto mt-6">
+            {!uploadedResume ? (
+              <UploadResume onResumeUploaded={setUploadedResume} />
+            ) : (
+              <ResumeDisplay resumeData={uploadedResume} />
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
