@@ -1,14 +1,15 @@
 import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Upload, FileText, CheckCircle } from 'lucide-react';
+import { Upload, FileText, CheckCircle, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface UploadResumeProps {
   onResumeUploaded: (resumeData: any) => void;
+  onBack?: () => void;
 }
 
-const UploadResume = ({ onResumeUploaded }: UploadResumeProps) => {
+const UploadResume = ({ onResumeUploaded, onBack }: UploadResumeProps) => {
   const [isUploading, setIsUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -159,6 +160,18 @@ const UploadResume = ({ onResumeUploaded }: UploadResumeProps) => {
 
   return (
     <div className="max-w-2xl mx-auto">
+      {onBack && (
+        <div className="mb-4">
+          <Button 
+            variant="outline" 
+            onClick={onBack}
+            className="flex items-center space-x-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Back</span>
+          </Button>
+        </div>
+      )}
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Upload Your Resume</CardTitle>

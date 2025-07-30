@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import { 
@@ -12,7 +13,8 @@ import {
   Languages, 
   Calendar,
   Building,
-  Star
+  Star,
+  ArrowLeft
 } from 'lucide-react';
 
 interface ResumeData {
@@ -55,9 +57,10 @@ interface ResumeData {
 
 interface ResumeDisplayProps {
   resumeData: ResumeData;
+  onBack?: () => void;
 }
 
-const ResumeDisplay = ({ resumeData }: ResumeDisplayProps) => {
+const ResumeDisplay = ({ resumeData, onBack }: ResumeDisplayProps) => {
   const getScoreColor = (score: number) => {
     if (score >= 80) return 'text-success';
     if (score >= 60) return 'text-warning';
@@ -72,6 +75,18 @@ const ResumeDisplay = ({ resumeData }: ResumeDisplayProps) => {
 
   return (
     <div className="space-y-6">
+      {onBack && (
+        <div className="mb-4">
+          <Button 
+            variant="outline" 
+            onClick={onBack}
+            className="flex items-center space-x-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Back</span>
+          </Button>
+        </div>
+      )}
       {/* Header Section - Personal Information */}
       <Card>
         <CardContent className="p-6">

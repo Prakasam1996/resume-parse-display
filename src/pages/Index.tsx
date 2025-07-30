@@ -10,7 +10,17 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState("");
 
   const handleTabChange = (value: string) => {
-    setActiveTab(value);
+    // Toggle functionality - if same tab is clicked, hide sections
+    if (activeTab === value) {
+      setActiveTab("");
+    } else {
+      setActiveTab(value);
+    }
+  };
+
+  const handleBackToTabs = () => {
+    setActiveTab("");
+    setUploadedResume(null);
   };
 
   return (
@@ -40,39 +50,23 @@ const Index = () => {
           <div className="max-w-6xl mx-auto mt-6 space-y-6">
             {!uploadedResume ? (
               <>
-                <UploadResume onResumeUploaded={setUploadedResume} />
+                <UploadResume 
+                  onResumeUploaded={setUploadedResume} 
+                  onBack={handleBackToTabs}
+                />
                 
                 {/* Resume Builder Section */}
                 <Card>
-                  <CardContent className="p-8 text-center">
-                    <div className="space-y-4">
-                      <div className="h-16 w-16 rounded-full bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center mx-auto">
-                        <svg 
-                          className="h-8 w-8 text-white" 
-                          fill="none" 
-                          stroke="currentColor" 
-                          viewBox="0 0 24 24"
-                        >
-                          <path 
-                            strokeLinecap="round" 
-                            strokeLinejoin="round" 
-                            strokeWidth={2} 
-                            d="M13 10V3L4 14h7v7l9-11h-7z" 
-                          />
-                        </svg>
-                      </div>
-                      <div>
-                        <h3 className="text-2xl font-bold text-foreground mb-2">Resume Builder with Generative AI</h3>
-                        <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                          Create a professional resume from scratch using AI-powered assistance. Just answer a few questions and let AI craft your perfect resume.
-                        </p>
-                      </div>
+                  <CardContent className="p-8">
+                    {/* Back Button for Resume Builder */}
+                    <div className="mb-6">
                       <Button 
-                        size="lg" 
-                        className="min-w-[250px] bg-gradient-to-r from-primary to-primary-glow hover:from-primary/90 hover:to-primary-glow/90 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                        variant="outline" 
+                        onClick={handleBackToTabs}
+                        className="flex items-center space-x-2"
                       >
                         <svg 
-                          className="w-5 h-5 mr-2" 
+                          className="h-4 w-4" 
                           fill="none" 
                           stroke="currentColor" 
                           viewBox="0 0 24 24"
@@ -81,17 +75,66 @@ const Index = () => {
                             strokeLinecap="round" 
                             strokeLinejoin="round" 
                             strokeWidth={2} 
-                            d="M13 10V3L4 14h7v7l9-11h-7z" 
+                            d="M15 19l-7-7 7-7" 
                           />
                         </svg>
-                        Build Resume with AI
+                        <span>Back</span>
                       </Button>
+                    </div>
+                    
+                    {/* Resume Builder Content */}
+                    <div className="text-center">
+                      <div className="space-y-4">
+                        <div className="h-16 w-16 rounded-full bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center mx-auto">
+                          <svg 
+                            className="h-8 w-8 text-white" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                          >
+                            <path 
+                              strokeLinecap="round" 
+                              strokeLinejoin="round" 
+                              strokeWidth={2} 
+                              d="M13 10V3L4 14h7v7l9-11h-7z" 
+                            />
+                          </svg>
+                        </div>
+                        <div>
+                          <h3 className="text-2xl font-bold text-foreground mb-2">Resume Builder with Generative AI</h3>
+                          <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                            Create a professional resume from scratch using AI-powered assistance. Just answer a few questions and let AI craft your perfect resume.
+                          </p>
+                        </div>
+                        <Button 
+                          size="lg" 
+                          className="min-w-[250px] bg-gradient-to-r from-primary to-primary-glow hover:from-primary/90 hover:to-primary-glow/90 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                        >
+                          <svg 
+                            className="w-5 h-5 mr-2" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                          >
+                            <path 
+                              strokeLinecap="round" 
+                              strokeLinejoin="round" 
+                              strokeWidth={2} 
+                              d="M13 10V3L4 14h7v7l9-11h-7z" 
+                            />
+                          </svg>
+                          Build Resume with AI
+                        </Button>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
               </>
             ) : (
-              <ResumeDisplay resumeData={uploadedResume} />
+              <ResumeDisplay 
+                resumeData={uploadedResume} 
+                onBack={handleBackToTabs}
+              />
             )}
           </div>
         )}
