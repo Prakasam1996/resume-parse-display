@@ -54,60 +54,28 @@ const UploadResume = ({ onResumeUploaded, onBack }: UploadResumeProps) => {
   };
 
   const simulateResumeExtraction = (fileName: string) => {
-    // This simulates the extracted resume data - in real app this would come from backend
+    // This would normally extract real data from the uploaded resume file
+    // For now, return empty data structure - no sample data will be shown
     return {
       personalInfo: {
-        name: "John Smith",
-        email: "john.smith@email.com",
-        phone: "+1 (555) 123-4567",
-        role: "Senior Software Engineer"
+        name: "",
+        email: "",
+        phone: "",
+        role: ""
       },
       profileScore: {
-        skills: 85,
-        certifications: 78,
-        experience: 92,
-        total: 85
+        skills: 0,
+        certifications: 0,
+        experience: 0,
+        total: 0
       },
-      skillsDistribution: [
-        { skill: "JavaScript", years: 5 },
-        { skill: "React", years: 4 },
-        { skill: "Node.js", years: 3 },
-        { skill: "Python", years: 2 },
-        { skill: "AWS", years: 3 }
-      ],
-      careerTimeline: [
-        { role: "Senior Software Engineer", company: "TechCorp Inc.", year: "2022-Present" },
-        { role: "Software Engineer", company: "StartupXYZ", year: "2020-2022" },
-        { role: "Junior Developer", company: "WebSolutions", year: "2019-2020" }
-      ],
-      professionalSummary: "Experienced software engineer with 5+ years in full-stack development, specializing in modern web technologies including React, Node.js, and cloud platforms. Proven track record of delivering scalable solutions and leading development teams.",
-      workExperience: [
-        {
-          company: "TechCorp Inc.",
-          role: "Senior Software Engineer",
-          duration: "2022 - Present",
-          description: "Lead development of microservices architecture and mentored junior developers."
-        },
-        {
-          company: "StartupXYZ",
-          role: "Software Engineer",
-          duration: "2020 - 2022",
-          description: "Built responsive web applications using React and implemented RESTful APIs."
-        }
-      ],
-      education: [
-        {
-          institution: "University of Technology",
-          year: "2019",
-          course: "Bachelor of Computer Science"
-        }
-      ],
-      languages: ["English", "Telugu", "Hindi"],
-      certifications: [
-        "AWS Certified Solutions Architect",
-        "React Developer Certification",
-        "Agile Project Management"
-      ]
+      skillsDistribution: [],
+      careerTimeline: [],
+      professionalSummary: "",
+      workExperience: [],
+      education: [],
+      languages: [],
+      certifications: []
     };
   };
 
