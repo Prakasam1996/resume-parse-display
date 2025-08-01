@@ -1,1 +1,10 @@
 project_id = "gppmripjhjhltrdtgsus"
+
+[functions.upload-resume]
+verify_jwt = true
+
+[functions.parse-resume]
+verify_jwt = false
+
+[functions.get-resume]
+verify_jwt = true
