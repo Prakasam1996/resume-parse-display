@@ -14,7 +14,108 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      resumes: {
+        Row: {
+          certifications: Json | null
+          created_at: string
+          education: Json | null
+          education_score: number | null
+          experience: Json | null
+          experience_score: number | null
+          file_path: string
+          file_size: number | null
+          filename: string
+          id: string
+          languages: Json | null
+          mime_type: string | null
+          overall_score: number | null
+          personal_info: Json | null
+          processing_error: string | null
+          processing_status: string | null
+          skills: Json | null
+          skills_score: number | null
+          summary: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          certifications?: Json | null
+          created_at?: string
+          education?: Json | null
+          education_score?: number | null
+          experience?: Json | null
+          experience_score?: number | null
+          file_path: string
+          file_size?: number | null
+          filename: string
+          id?: string
+          languages?: Json | null
+          mime_type?: string | null
+          overall_score?: number | null
+          personal_info?: Json | null
+          processing_error?: string | null
+          processing_status?: string | null
+          skills?: Json | null
+          skills_score?: number | null
+          summary?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          certifications?: Json | null
+          created_at?: string
+          education?: Json | null
+          education_score?: number | null
+          experience?: Json | null
+          experience_score?: number | null
+          file_path?: string
+          file_size?: number | null
+          filename?: string
+          id?: string
+          languages?: Json | null
+          mime_type?: string | null
+          overall_score?: number | null
+          personal_info?: Json | null
+          processing_error?: string | null
+          processing_status?: string | null
+          skills?: Json | null
+          skills_score?: number | null
+          summary?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
