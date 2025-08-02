@@ -147,7 +147,7 @@ Ensure all fields are filled with relevant data from the resume. If information 
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'gpt-4o-mini',
+      model: 'gpt-4.1-2025-04-14',
       messages: [
         { role: 'system', content: 'You are a professional resume parser. Return only valid JSON.' },
         { role: 'user', content: prompt }
