@@ -1,6 +1,5 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -20,28 +19,26 @@ serve(async (req) => {
       throw new Error('OpenAI API key not configured');
     }
 
-    const { resumeId, filePath } = await req.json();
+    const formData = await req.formData();
+    const file = formData.get('file') as File;
     
-    if (!resumeId || !filePath) {
-      throw new Error('Resume ID and file path are required');
+    if (!file) {
+      throw new Error('No file provided');
     }
 
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
-
-    // Download the file from storage
-    const { data: fileData, error: downloadError } = await supabase.storage
-      .from('resumes')
-      .download(filePath);
-
-    if (downloadError) {
-      throw new Error('Failed to download resume file');
+    // Validate file type
+    const validTypes = [
+      'application/pdf',
+      'application/msword', 
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ];
+    
+    if (!validTypes.includes(file.type)) {
+      throw new Error('Invalid file type. Please upload a PDF, DOC, or DOCX file.');
     }
 
-    // Convert file to text (simplified - in reality you'd use proper PDF/DOC parsers)
-    const fileText = await extractTextFromFile(fileData, filePath);
+    // Extract text from file (simplified)
+    const fileText = await extractTextFromFile(file);
     
     // Use OpenAI to parse the resume
     const parsedData = await parseResumeWithAI(fileText);
@@ -49,59 +46,18 @@ serve(async (req) => {
     // Calculate scores
     const scores = calculateScores(parsedData);
 
-    // Update the resume record with parsed data
-    const { error: updateError } = await supabase
-      .from('resumes')
-      .update({
-        personal_info: parsedData.personalInfo,
-        summary: parsedData.summary,
-        skills: parsedData.skills,
-        experience: parsedData.experience,
-        education: parsedData.education,
-        languages: parsedData.languages,
-        certifications: parsedData.certifications,
-        overall_score: scores.overall,
-        skills_score: scores.skills,
-        experience_score: scores.experience,
-        education_score: scores.education,
-        processing_status: 'completed'
-      })
-      .eq('id', resumeId);
-
-    if (updateError) {
-      throw new Error('Failed to update resume data');
-    }
-
     return new Response(JSON.stringify({ 
-      success: true, 
-      message: 'Resume parsed successfully',
-      data: parsedData,
-      scores 
+      ...parsedData,
+      overall_score: scores.overall,
+      skills_score: scores.skills,
+      experience_score: scores.experience,
+      education_score: scores.education
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
   } catch (error) {
     console.error('Error in parse-resume function:', error);
-    
-    // Update resume status to failed
-    if (req.body) {
-      const { resumeId } = await req.json();
-      if (resumeId) {
-        const supabase = createClient(
-          Deno.env.get('SUPABASE_URL') ?? '',
-          Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-        );
-        
-        await supabase
-          .from('resumes')
-          .update({ 
-            processing_status: 'failed',
-            processing_error: error.message 
-          })
-          .eq('id', resumeId);
-      }
-    }
 
     return new Response(JSON.stringify({ 
       error: error.message || 'An unexpected error occurred' 
@@ -112,12 +68,12 @@ serve(async (req) => {
   }
 });
 
-async function extractTextFromFile(fileData: Blob, filePath: string): Promise<string> {
+async function extractTextFromFile(file: File): Promise<string> {
   // This is a simplified text extraction
   // In production, you'd use proper libraries like pdf-parse for PDFs
   // and mammoth for DOCX files
   
-  const text = await fileData.text();
+  const text = await file.text();
   return text || "Sample resume text content for parsing...";
 }
 
@@ -131,7 +87,7 @@ ${resumeText}
 
 Please extract and return ONLY a valid JSON object with this exact structure:
 {
-  "personalInfo": {
+  "personal_info": {
     "name": "",
     "email": "",
     "phone": "",
@@ -217,9 +173,9 @@ Ensure all fields are filled with relevant data from the resume. If information 
 
 function calculateScores(parsedData: any) {
   // Calculate scores based on resume content
-  const skillsScore = Math.min(90, Math.max(40, parsedData.skills.length * 15));
-  const experienceScore = Math.min(95, Math.max(30, parsedData.experience.length * 25));
-  const educationScore = Math.min(85, Math.max(50, parsedData.education.length * 30));
+  const skillsScore = Math.min(90, Math.max(40, parsedData.skills?.length * 15 || 0));
+  const experienceScore = Math.min(95, Math.max(30, parsedData.experience?.length * 25 || 0));
+  const educationScore = Math.min(85, Math.max(50, parsedData.education?.length * 30 || 0));
   const overall = Math.round((skillsScore + experienceScore + educationScore) / 3);
 
   return {
