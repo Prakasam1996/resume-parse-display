@@ -19,6 +19,9 @@ serve(async (req) => {
       throw new Error('OpenAI API key not configured');
     }
 
+    console.log('OpenAI API Key exists:', !!openAIApiKey);
+    console.log('API Key length:', openAIApiKey?.length || 0);
+
     const formData = await req.formData();
     const file = formData.get('file') as File;
     
