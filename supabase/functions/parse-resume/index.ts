@@ -75,56 +75,54 @@ async function extractTextFromFile(file: File): Promise<string> {
   console.log('Extracting text from file:', file.name, 'Type:', file.type, 'Size:', file.size);
   
   try {
-    // For now, we'll create a mock extraction that simulates real resume content
-    // In production, you'd use libraries like pdf-parse for PDFs and mammoth for DOCX
+    if (file.type === 'application/pdf') {
+      // For PDF files, try to extract text as plain text
+      // Note: This is a basic approach. For production, use pdf-parse library
+      const arrayBuffer = await file.arrayBuffer();
+      const text = new TextDecoder().decode(arrayBuffer);
+      
+      // Extract readable text between common PDF markers
+      let extractedText = '';
+      const lines = text.split('\n');
+      
+      for (const line of lines) {
+        // Skip binary data and extract readable text
+        if (line.trim() && 
+            !line.includes('%PDF') && 
+            !line.includes('obj') && 
+            !line.includes('stream') && 
+            !line.includes('endstream') &&
+            /[a-zA-Z]/.test(line)) {
+          extractedText += line + '\n';
+        }
+      }
+      
+      if (extractedText.trim().length > 50) {
+        console.log('PDF text extracted successfully, length:', extractedText.length);
+        return extractedText.trim();
+      }
+    } else if (file.type.includes('word') || file.type.includes('document')) {
+      // For DOC/DOCX files, attempt basic text extraction
+      const text = await file.text();
+      if (text && text.length > 50) {
+        console.log('Document text extracted successfully, length:', text.length);
+        return text;
+      }
+    } else {
+      // For other text-based files
+      const text = await file.text();
+      if (text && text.length > 10) {
+        console.log('Text file extracted successfully, length:', text.length);
+        return text;
+      }
+    }
     
-    const mockResumeText = `
-JOHN SMITH
-Email: john.smith@email.com
-Phone: (555) 123-4567
-Location: New York, NY
-LinkedIn: linkedin.com/in/johnsmith
-
-SUMMARY
-Experienced software developer with 5+ years in full-stack development, specializing in React, Node.js, and cloud technologies.
-
-SKILLS
-• JavaScript, TypeScript, Python
-• React, Node.js, Express
-• AWS, Docker, Kubernetes
-• PostgreSQL, MongoDB
-
-EXPERIENCE
-Senior Software Developer
-Tech Solutions Inc. | 2021 - Present
-• Led development of microservices architecture serving 1M+ users
-• Reduced application load time by 40% through optimization
-• Mentored 3 junior developers
-
-Software Developer
-StartupCorp | 2019 - 2021
-• Built responsive web applications using React and Node.js
-• Implemented CI/CD pipelines reducing deployment time by 60%
-
-EDUCATION
-Bachelor of Science in Computer Science
-University of Technology | 2019
-GPA: 3.8/4.0
-
-CERTIFICATIONS
-• AWS Certified Solutions Architect
-• Google Cloud Professional Developer
-
-LANGUAGES
-• English (Native)
-• Spanish (Conversational)
-    `;
+    // If extraction fails, throw an error
+    throw new Error('Unable to extract readable text from the uploaded file');
     
-    console.log('Mock resume text generated successfully');
-    return mockResumeText.trim();
   } catch (error) {
     console.error('Error extracting text from file:', error);
-    throw new Error('Failed to extract text from resume file');
+    throw new Error(`Failed to extract text from resume file: ${error.message}`);
   }
 }
 
