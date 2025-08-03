@@ -150,7 +150,7 @@ Ensure all fields are filled with relevant data from the resume. If information 
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'gpt-4.1-2025-04-14',
+      model: 'gpt-4o-mini',
       messages: [
         { role: 'system', content: 'You are a professional resume parser. Return only valid JSON.' },
         { role: 'user', content: prompt }
@@ -160,7 +160,18 @@ Ensure all fields are filled with relevant data from the resume. If information 
   });
 
   if (!response.ok) {
-    throw new Error(`OpenAI API error: ${response.status}`);
+    const errorData = await response.json().catch(() => ({}));
+    console.error('OpenAI API Error:', response.status, errorData);
+    
+    if (response.status === 429) {
+      throw new Error('Rate limit exceeded. Please wait a moment and try again, or check your OpenAI billing and usage limits.');
+    } else if (response.status === 401) {
+      throw new Error('Invalid OpenAI API key. Please check your API key configuration.');
+    } else if (response.status === 403) {
+      throw new Error('OpenAI API access forbidden. Please check your API key permissions and billing status.');
+    } else {
+      throw new Error(`OpenAI API error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+    }
   }
 
   const data = await response.json();
