@@ -1,73 +1,132 @@
-# Welcome to your Lovable project
+# Resume Parser & Analysis Application
 
-## Project info
+## Project Structure
 
-**URL**: https://lovable.dev/projects/248975f3-1dc3-4616-8c34-1d378387bb45
+This project is organized into two main directories:
 
-## How can I edit this code?
+- **frontend/**: React-based frontend application
+- **backend/**: Supabase backend services and edge functions
 
-There are several ways of editing your application.
+## Frontend Setup
 
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/248975f3-1dc3-4616-8c34-1d378387bb45) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+Navigate to the frontend directory and install dependencies:
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+cd frontend
+npm install
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Backend Setup
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Navigate to the backend directory and start Supabase:
 
-**Use GitHub Codespaces**
+```sh
+cd backend
+supabase start
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Features
 
-## What technologies are used for this project?
+### Resume Upload & Analysis
+- Upload PDF, DOC, or DOCX resume files
+- Automatic text extraction and parsing
+- Extract key information:
+  - Personal information (name, email, phone)
+  - Professional summary
+  - Work experience
+  - Education
+  - Skills
+  - Certifications
+  - Languages
 
-This project is built with:
+### Enhanced Parsing
+- Improved text extraction from various file formats
+- Better pattern matching for names, contact information
+- Enhanced skills detection with categorization
+- Comprehensive experience and education parsing
+- Intelligent scoring system
 
-- Vite
+## Technologies Used
+
+### Frontend
+- React 18
 - TypeScript
-- React
-- shadcn-ui
 - Tailwind CSS
+- shadcn/ui components
+- React Router
+- Vite
 
-## How can I deploy this project?
+### Backend
+- Supabase
+- PostgreSQL
+- Edge Functions (Deno)
+- OpenAI API (optional for enhanced parsing)
 
-Simply open [Lovable](https://lovable.dev/projects/248975f3-1dc3-4616-8c34-1d378387bb45) and click on Share -> Publish.
+## API Endpoints
 
-## Can I connect a custom domain to my Lovable project?
+- `POST /functions/v1/parse-resume` - Parse uploaded resume file
+- `GET /functions/v1/get-resume` - Retrieve parsed resume data
+- `POST /functions/v1/upload-resume` - Upload resume file (authenticated)
 
-Yes, you can!
+## Environment Variables
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### Backend
+- `OPENAI_API_KEY` - Optional, for enhanced AI-powered parsing
+- `SUPABASE_URL` - Supabase project URL
+- `SUPABASE_ANON_KEY` - Supabase anonymous key
+- `SUPABASE_SERVICE_ROLE_KEY` - Supabase service role key
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## Development
+
+### Frontend Development
+```sh
+cd frontend
+npm run dev
+```
+
+### Backend Development
+```sh
+cd backend
+supabase functions serve
+```
+
+## Deployment
+
+### Frontend
+```sh
+cd frontend
+npm run build
+```
+
+### Backend
+```sh
+cd backend
+supabase functions deploy
+```
+
+## Recent Improvements
+
+1. **Enhanced Resume Parsing**
+   - Better text extraction from PDF files
+   - Improved name detection with multiple patterns
+   - Enhanced skills extraction with broader keyword matching
+   - Better experience and education parsing
+   - More accurate company and position extraction
+
+2. **Simplified UI**
+   - Removed location, LinkedIn, and website fields
+   - Removed AI resume builder section
+   - Focused on core resume analysis functionality
+
+3. **Project Structure**
+   - Separated frontend and backend into distinct directories
+   - Improved organization and maintainability
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request

@@ -1,0 +1,14 @@
+{
+  "name": "resume-parser-backend",
+  "version": "1.0.0",
+  "description": "Backend services for resume parser application",
+  "main": "index.js",
+  "scripts": {
+    "start": "supabase start",
+    "stop": "supabase stop",
+    "reset": "supabase db reset",
+    "deploy": "supabase functions deploy"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
