@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Upload, FileText, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 interface UploadResumeProps {
   onResumeUploaded: (resumeData: any) => void;
@@ -10,6 +11,7 @@ interface UploadResumeProps {
 }
 
 const UploadResume = ({ onResumeUploaded, onBack }: UploadResumeProps) => {
+  const navigate = useNavigate();
   const [isUploading, setIsUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -123,7 +125,8 @@ const UploadResume = ({ onResumeUploaded, onBack }: UploadResumeProps) => {
         ) : []
       };
 
-      onResumeUploaded(transformedData);
+      // Navigate to analysis page with the raw parsed data
+      navigate('/resume-analysis', { state: { resumeData: result } });
 
     } catch (error: any) {
       console.error('Upload error:', error);

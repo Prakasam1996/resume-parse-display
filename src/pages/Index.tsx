@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button";
 import UploadResume from "@/components/UploadResume";
 import ResumeDisplay from "@/components/ResumeDisplay";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
+  const navigate = useNavigate();
   const [uploadedResume, setUploadedResume] = useState(null);
   const [activeTab, setActiveTab] = useState("");
 
@@ -109,6 +111,7 @@ const Index = () => {
                         <Button 
                           size="lg" 
                           className="min-w-[250px] bg-gradient-to-r from-primary to-primary-glow hover:from-primary/90 hover:to-primary-glow/90 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                          onClick={() => navigate('/resume-builder')}
                         >
                           <svg 
                             className="w-5 h-5 mr-2" 
