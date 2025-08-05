@@ -15,9 +15,6 @@ interface PersonalInfo {
   name: string;
   email: string;
   phone: string;
-  location: string;
-  linkedin: string;
-  website: string;
 }
 
 interface Experience {
@@ -49,10 +46,7 @@ const ResumeBuilder = () => {
   const [personalInfo, setPersonalInfo] = useState<PersonalInfo>({
     name: '',
     email: '',
-    phone: '',
-    location: '',
-    linkedin: '',
-    website: ''
+    phone: ''
   });
 
   const [summary, setSummary] = useState('');
@@ -252,33 +246,6 @@ Format the response as JSON with these keys: enhancedSummary, improvedExperience
                       value={personalInfo.phone}
                       onChange={(e) => setPersonalInfo({ ...personalInfo, phone: e.target.value })}
                       placeholder="+1 (555) 123-4567"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="location">Location</Label>
-                    <Input
-                      id="location"
-                      value={personalInfo.location}
-                      onChange={(e) => setPersonalInfo({ ...personalInfo, location: e.target.value })}
-                      placeholder="New York, NY"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="linkedin">LinkedIn</Label>
-                    <Input
-                      id="linkedin"
-                      value={personalInfo.linkedin}
-                      onChange={(e) => setPersonalInfo({ ...personalInfo, linkedin: e.target.value })}
-                      placeholder="linkedin.com/in/johndoe"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="website">Website</Label>
-                    <Input
-                      id="website"
-                      value={personalInfo.website}
-                      onChange={(e) => setPersonalInfo({ ...personalInfo, website: e.target.value })}
-                      placeholder="www.johndoe.com"
                     />
                   </div>
                 </div>
@@ -571,11 +538,6 @@ Format the response as JSON with these keys: enhancedSummary, improvedExperience
                   <div className="flex justify-center flex-wrap gap-4 mt-2 text-muted-foreground">
                     {personalInfo.email && <span>{personalInfo.email}</span>}
                     {personalInfo.phone && <span>{personalInfo.phone}</span>}
-                    {personalInfo.location && <span>{personalInfo.location}</span>}
-                  </div>
-                  <div className="flex justify-center flex-wrap gap-4 mt-1">
-                    {personalInfo.linkedin && <span className="text-primary">{personalInfo.linkedin}</span>}
-                    {personalInfo.website && <span className="text-primary">{personalInfo.website}</span>}
                   </div>
                 </div>
 
