@@ -2,14 +2,14 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Upload, FileText, Sparkles } from "lucide-react";
-import UploadResume from "@/components/UploadResume";
+import { UploadResume } from "@/components/UploadResume";
 import { useNavigate } from "react-router-dom";
 
 const Index = () => {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const navigate = useNavigate();
 
-  const handleFileUpload = (file: File) => {
+  const handleUpload = (file: File) => {
     setUploadedFile(file);
   };
 
@@ -43,7 +43,7 @@ const Index = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <UploadResume onFileUpload={handleFileUpload} />
+              <UploadResume onUpload={handleUpload} />
               {uploadedFile && (
                 <div className="mt-4 p-3 bg-green-50 rounded-lg">
                   <p className="text-sm text-green-700">
