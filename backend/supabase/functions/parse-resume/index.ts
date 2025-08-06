@@ -38,20 +38,20 @@ serve(async (req) => {
     console.log('File content extracted, length:', text.length);
 
     let parseResult;
-    const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+    const geminiApiKey = Deno.env.get('GEMINI_API_KEY');
 
-    // Try OpenAI parsing first if API key is available
-    if (openAIApiKey) {
+    // Try Gemini 2.0 Flash parsing first if API key is available
+    if (geminiApiKey) {
       try {
-        console.log('Attempting OpenAI parsing...');
-        parseResult = await parseResumeWithOpenAI(text, openAIApiKey);
-        console.log('OpenAI parsing successful');
-      } catch (openAIError) {
-        console.log('OpenAI parsing failed, falling back to basic parsing:', openAIError.message);
+        console.log('Attempting Gemini 2.0 Flash parsing...');
+        parseResult = await parseResumeWithGemini(text, geminiApiKey);
+        console.log('Gemini parsing successful');
+      } catch (geminiError) {
+        console.log('Gemini parsing failed, falling back to basic parsing:', geminiError.message);
         parseResult = parseResumeBasic(text);
       }
     } else {
-      console.log('No OpenAI API key found, using basic parsing');
+      console.log('No Gemini API key found, using basic parsing');
       parseResult = parseResumeBasic(text);
     }
 
@@ -124,67 +124,114 @@ serve(async (req) => {
   }
 });
 
-async function parseResumeWithOpenAI(content: string, apiKey: string) {
-  const prompt = `Parse the following resume and extract information in JSON format. Return ONLY valid JSON with these exact keys:
-  {
-    "personalInfo": {
-      "name": "Full Name",
-      "email": "email@example.com", 
-      "phone": "phone number"
-    },
-    "skills": ["skill1", "skill2", ...],
-    "experience": [
-      {
-        "company": "Company Name",
-        "position": "Job Title", 
-        "duration": "Start - End dates",
-        "description": "Job description"
-      }
-    ],
-    "education": [
-      {
-        "institution": "School/University",
-        "degree": "Degree",
-        "field": "Field of study",
-        "year": "Year"
-      }
-    ],
-    "certifications": ["cert1", "cert2", ...],
-    "languages": ["language1", "language2", ...],
-    "summary": "Professional summary"
-  }
+async function parseResumeWithGemini(content: string, apiKey: string) {
+  const prompt = `You are an expert resume parser with 95% accuracy. Parse the following resume content and extract structured data in EXACT JSON format.
 
-Resume content:
-${content}`;
+CRITICAL REQUIREMENTS:
+- Return ONLY valid JSON, no markdown, no explanations
+- Be extremely precise in data extraction
+- Extract ALL available information accurately
+- Use consistent date formats
+- Group related skills logically
+- Extract complete experience descriptions
 
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+REQUIRED JSON STRUCTURE:
+{
+  "personalInfo": {
+    "name": "Full Name (extracted exactly as written)",
+    "email": "email@example.com (exact email found)", 
+    "phone": "phone number (formatted consistently)"
+  },
+  "skills": ["skill1", "skill2", "skill3", ...] (comprehensive list of technical and soft skills),
+  "experience": [
+    {
+      "company": "Company Name (exact name)",
+      "position": "Job Title (exact title)", 
+      "duration": "Start Date - End Date (standardized format)",
+      "description": "Complete description with all achievements and responsibilities"
+    }
+  ],
+  "education": [
+    {
+      "institution": "School/University (full name)",
+      "degree": "Degree Type and Name",
+      "field": "Field of study/Major",
+      "year": "Graduation Year"
+    }
+  ],
+  "certifications": ["certification1", "certification2", ...] (all certifications, licenses),
+  "languages": ["language1", "language2", ...] (all languages mentioned),
+  "summary": "Comprehensive professional summary extracted or intelligently composed from content"
+}
+
+RESUME CONTENT TO PARSE:
+${content}
+
+Extract with maximum accuracy and completeness. Return ONLY the JSON object:`;
+
+  const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=' + apiKey, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'gpt-4o-mini',
-      messages: [
-        { role: 'system', content: 'You are a resume parser. Extract structured data from resumes and return only valid JSON.' },
-        { role: 'user', content: prompt }
+      contents: [
+        {
+          parts: [
+            {
+              text: prompt
+            }
+          ]
+        }
       ],
-      temperature: 0,
+      generationConfig: {
+        temperature: 0,
+        topK: 1,
+        topP: 1,
+        maxOutputTokens: 4096,
+      },
+      safetySettings: [
+        {
+          category: "HARM_CATEGORY_HARASSMENT",
+          threshold: "BLOCK_NONE"
+        },
+        {
+          category: "HARM_CATEGORY_HATE_SPEECH", 
+          threshold: "BLOCK_NONE"
+        },
+        {
+          category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+          threshold: "BLOCK_NONE"
+        },
+        {
+          category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+          threshold: "BLOCK_NONE"
+        }
+      ]
     }),
   });
 
   if (!response.ok) {
-    throw new Error(`OpenAI API error: ${response.status}`);
+    const errorData = await response.text();
+    console.error('Gemini API error:', response.status, errorData);
+    throw new Error(`Gemini API error: ${response.status}`);
   }
 
   const data = await response.json();
-  const content_result = data.choices[0].message.content;
+  
+  if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+    throw new Error('Invalid response structure from Gemini API');
+  }
+
+  const content_result = data.candidates[0].content.parts[0].text;
   
   try {
-    return JSON.parse(content_result);
+    // Clean the response in case there's any markdown formatting
+    const cleanedContent = content_result.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    return JSON.parse(cleanedContent);
   } catch (parseError) {
-    console.error('Failed to parse OpenAI response as JSON:', content_result);
-    throw new Error('Invalid JSON response from OpenAI');
+    console.error('Failed to parse Gemini response as JSON:', content_result);
+    throw new Error('Invalid JSON response from Gemini');
   }
 }
 

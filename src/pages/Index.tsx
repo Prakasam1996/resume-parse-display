@@ -13,6 +13,12 @@ const Index = () => {
     setUploadedFile(file);
   };
 
+  const handleParseComplete = (resumeData: any) => {
+    console.log('Resume parsed:', resumeData);
+    // You can store this data in state or navigate to analysis page
+    navigate('/analysis', { state: { resumeData } });
+  };
+
   const handleAnalyze = () => {
     if (uploadedFile) {
       navigate('/analysis');
@@ -43,7 +49,7 @@ const Index = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <UploadResume onUpload={handleUpload} />
+              <UploadResume onUpload={handleUpload} onParseComplete={handleParseComplete} />
               {uploadedFile && (
                 <div className="mt-4 p-3 bg-green-50 rounded-lg">
                   <p className="text-sm text-green-700">
